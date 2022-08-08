@@ -37,7 +37,11 @@ bot.on('message', async (msg) => {
       if (text?.startsWith(`${commands.quote[0]} `) || text?.startsWith(`${commands.quote[1]} `)) {
         const randomText = randomWordsGenerator(arraySplitter(storage))
         const words = text?.split(' ').slice(1).join(' ')
-        await sendMsg(storage, herokuToken, chatId, bot, randomText + ' ' + words)
+        const reply = (randomText + ' ' + words)
+          .split(' ')
+          .sort(() => Math.random() - 0.5)
+          .join(' ')
+        await sendMsg(storage, herokuToken, chatId, bot, reply)
       } else {
         try {
           await setNewPhraseToStorage(text!)
