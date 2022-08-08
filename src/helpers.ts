@@ -1,3 +1,6 @@
+import { generatePhrase, getApiToken, restartServer } from './services.js'
+import TelegramApi from 'node-telegram-bot-api'
+
 export const arraySplitter = (array: string[]) => {
   const resultArray: string[] = []
   array.map((item) => item.split(' ').forEach((el) => el.length > 2 && resultArray.push(el)))
@@ -13,4 +16,26 @@ export const randomWordsGenerator = (array: string[]) => {
     result.push(array[randomNumber])
   }
   return result.join(' ')
+}
+
+export const sendMsg = async (
+  storage: string[],
+  herokuToken: string,
+  chatId: number,
+  bot: TelegramApi,
+  randomText: string
+) => {
+  try {
+    const token = await getApiToken(randomText)
+    console.log(token.status)
+    if (token.status === 'limit_exceeded') {
+      await restartServer(herokuToken)
+      return await bot.sendMessage(chatId, 'Лимит сообщений')
+    }
+    await new Promise((resolve) => setTimeout(resolve, 3000))
+    const res = await generatePhrase(token.data.taskId)
+    await bot.sendMessage(chatId, res.data.result[0])
+  } catch (e) {
+    console.warn((e as Error).message)
+  }
 }
