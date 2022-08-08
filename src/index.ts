@@ -11,7 +11,7 @@ app.listen(process.env.PORT || 5500)
 const token = process.env.TELEGRAM_TOKEN!
 const herokuToken = process.env.HEROKU_TOKEN!
 
-const bot = new TelegramApi(token!, { polling: true })
+const bot = new TelegramApi(token, { polling: true })
 
 bot.on('message', async (msg) => {
   const { text } = msg
