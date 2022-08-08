@@ -19,7 +19,7 @@ bot.on('message', async (msg) => {
   const chatId = msg.chat.id
   let storage: any
   try {
-    storage = await getPhrasesFromStorage()
+    storage = await getPhrasesFromStorage(chatId)
   } catch (e) {
     console.warn((e as Error).message)
   }
@@ -44,7 +44,7 @@ bot.on('message', async (msg) => {
         await sendMsg(storage, herokuToken, chatId, bot, reply)
       } else {
         try {
-          await setNewPhraseToStorage(text!)
+          await setNewPhraseToStorage(text!, chatId)
         } catch (e) {
           console.warn((e as Error).message)
         }

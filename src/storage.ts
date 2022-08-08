@@ -1,8 +1,10 @@
 import fetch from 'node-fetch'
+import { chats } from './chats.js'
 
-export const getPhrasesFromStorage = async () => {
+export const getPhrasesFromStorage = async (chatId: number) => {
+  const url = chats.find((chat) => chat.chatId === chatId)!.title
   try {
-    const response = await fetch(process.env.BD_URL!)
+    const response = await fetch(process.env.BD_URL! + url + '.json')
     const responseObject = await response.json()
     return Object.values(responseObject).map((item: any) => item.phrase)
   } catch (e) {
@@ -10,9 +12,10 @@ export const getPhrasesFromStorage = async () => {
   }
 }
 
-export const setNewPhraseToStorage = async (phrase: string) => {
+export const setNewPhraseToStorage = async (phrase: string, chatId: number) => {
+  const url = chats.find((chat) => chat.chatId === chatId)!.title
   try {
-    await fetch(process.env.BD_URL!, {
+    await fetch(process.env.BD_URL! + url + '.json', {
       method: 'POST',
       headers: {
         'Content-type': 'application/json'
