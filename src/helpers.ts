@@ -1,6 +1,5 @@
 import { generatePhrase, getApiToken, restartServer } from './services.js'
 import TelegramApi from 'node-telegram-bot-api'
-import { chats } from './chats.js'
 
 export const arraySplitter = (array: string[]) => {
   const resultArray: string[] = []
@@ -26,19 +25,17 @@ export const sendMsg = async (
   bot: TelegramApi,
   randomText: string
 ) => {
-  if (chats.map((chat) => chat.chatId).includes(chatId)) {
-    try {
-      const token = await getApiToken(randomText)
-      console.log(token.status)
-      if (token.status === 'limit_exceeded') {
-        await restartServer(herokuToken)
-        return await bot.sendMessage(chatId, 'Лимит сообщений')
-      }
-      await new Promise((resolve) => setTimeout(resolve, 3000))
-      const res = await generatePhrase(token.data.taskId)
-      await bot.sendMessage(chatId, res.data.result[0])
-    } catch (e) {
-      console.warn((e as Error).message)
+  try {
+    const token = await getApiToken(randomText)
+    console.log(token.status)
+    if (token.status === 'limit_exceeded') {
+      await restartServer(herokuToken)
+      return await bot.sendMessage(chatId, 'Достигнут лимит сообщений. Подождите немного.')
     }
+    await new Promise((resolve) => setTimeout(resolve, 3000))
+    const res = await generatePhrase(token.data.taskId)
+    await bot.sendMessage(chatId, res.data.result[4])
+  } catch (e) {
+    console.warn((e as Error).message)
   }
 }
